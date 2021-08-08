@@ -22,8 +22,9 @@
 
 
 // const inputData = [ ["a", "b"], ["a", "c"], ["d", "e"] ]; // Example 1
-const inputData = [ ["q", "w", 'a'], ["a", "b"], ["a", "c"], ["q", "e"], ["q", "r"], ]; // Example 2
-// const inputData = [ ['a', 'b'], ['a', 'c'], ['d', 'e'] ]; // Example 3
+// const inputData = [ ["q", "w", 'a'], ["a", "b"], ["a", "c"], ["q", "e"], ["q", "r"], ]; // Example 2
+const inputData = [ ["a", "b"], ["a", "c"], ["q", "e"], ["q", "r"], ["q", "w", 'a'], ] // Example 2.1
+// const inputData = [ ['e', 'b'], ['a', 'c'], ['d', 'a'], ['e', 'f'] ]; // Example 3 - 2 ассоциации равной длины
 
 console.log('\nМаксимальный список рекомендаций:\n' + maxItemAssociation(inputData) + '\n');
 
@@ -106,8 +107,17 @@ function maxItemAssociation(data) {
             return false;
         } else {
             let maxAssociation = associationsList[0];
+
             for( associationNumber in associationsList) {
-                
+                if (associationsList[associationNumber].length > maxAssociation.length) {
+                    maxAssociation = associationsList[associationNumber];
+                } else if (associationsList[associationNumber].length == maxAssociation.length) {
+                    // если рекомендации равной длины - выбираем за максимальную ту, у которой первый элемент раньше по алфавиту
+                    if (associationsList[associationNumber][0] < maxAssociation[0]) {
+                        maxAssociation = associationsList[associationNumber];
+                    }
+
+                }
             }
             return maxAssociation;
         }
