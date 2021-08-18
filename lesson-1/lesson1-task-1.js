@@ -39,11 +39,8 @@ function maxItemAssociation(data) {
     associations.push(data[0]);
 
     for (let k = 0; k < associations.length; k++) {
-        console.log('associationsArray:');
-        console.log(associations);
         // проверить, возможно, текущая ассоциация была добавлена на предыдущем шаге и, возможно она входит в одну из ассоциаций,
         // которые уже были уточнены ( в processAssociation() )
-        
         if (checkOnCopyAndDelete(k, associations) == -1) {
             //deleted
             k--;
@@ -53,112 +50,45 @@ function maxItemAssociation(data) {
         
         let assotiation = associations[k];
         associations[k] =  processAssoсiation(data, assotiation, associations);
-        console.log('-------------------------------I');
-        console.log(associations[k]);
     }
-    console.log(associations);
-
-
-    console.log('-------------TOTAL ------------');
 
     return findMaxAssociation(associations);
 
 
-
-
     function processAssoсiation(data, associationCurrent, associationsAll) {
         
-        // console.log('Processing associationCurrent: ' + associationCurrent);
-        // console.log('Processing data:');
-        // console.log(data);
-        
         for (let i = 0; i < data.length; i++) {
-            if ( i == 0 ) {
-                console.log('Processing associationCurrent: ' + associationCurrent);
-            }
 
-            
             dataItem = data[i];
-            console.log(i);
             // элемент из ДАТА и ассоциация
             // если есть пересечения = дополняем ассоциацию
-            console.log('intersection   чек: ' + dataItem + ' и ассоциация: ' + associationCurrent);
             let intersection = dataItem.filter(x => associationCurrent.includes(x));
-            // console.log('intersection:  ' + intersection);
-    
     
             if (intersection.length > 0 && dataItem.toString() != associationCurrent.toString()) {
                 // если пересечение есть и чек не равен ассоциации полностью - дополняем текущую ассоциацию
-    
                 let associationAndDataItem = [...new Set([...associationCurrent, ...dataItem])];
-                console.log(associationCurrent.toString() + ' СРАВНИВАЕМ с ' + associationAndDataItem.toString());
-                
-                
                 
                 if (associationCurrent.toString() == associationAndDataItem.toString()) {
                     // если текущий чек(dataItem) - является подмножеством ассоциации (содержит уже известные товары) -- идём дальше
-                    console.log('ЧЕК ЯВЛЯЕТСЯ ПОДМНОЖЕСТВОМ АССОЦИАЦИИ - идём дальше');
-                    // continue;
                 } else {
                     // иначе (если множества не совпадают, т.е. имеются новые элементы) дополняем текущую ассоциацию и заново идём по чекам с новой ассоциацией
-                    console.log('ЧЕК не ЯВЛЯЕТСЯ ПОДМНОЖЕСТВОМ АССОЦИАЦИИ - мерджим');
-                    console.log('ассоциация: ' + associationCurrent);
-                    console.log('чек: ' + dataItem);
-    
-                    console.log('Ассоциация дополнена:');
                     associationCurrent = mergeLists(dataItem, associationCurrent);
-                    // console.log('Ассоциация дополнена:');
-                    console.log(associationCurrent);
-                    
-                    console.log('\t список ассоциаций:');
-                    console.log(associationsAll);
-                    console.log(associations);
-
-                    
-    
-                    console.log("ИДЁМ СНАЧАЛА");
                     i = -1; // т.к. ассоциация измениласть - заново проходимся по DATA (в конце блока цикл сделает ++)
-    
-                    // break;
-                    
-    
                 }
             } else if (intersection.toString() == associationCurrent.toString()) {
                 // если пересечение ассоциации-и-чека с текущей ассоциацией полностью совпадают -- идём дальше
-                console.log('полное совпадение ассоциации и чека');
             } else {
                 // если пересечения нет - возможно, это новая ассоциация
-                // console.log('третье');
-                console.log('ВОЗМОЖНО НОВАЯ АССОЦИАЦИЯ');
-                // проверим, входят ли все товары из чека в какую-нибудь ассоциацию вместе
                 if ( checkOnNewAssociation(dataItem, associationsAll) ) {
-                    console.log('ТОЧНО НОВАЯ АССОЦИАЦИЯ');
+                    // проверим, входят ли все товары из чека в какую-нибудь ассоциацию вместе
                     associationsAll.push(dataItem);
-                    console.log(associationsAll);
-
                 } else {
-                    console.log('НЕ НОВАЯ АССОЦИАЦИЯ');
+                    // не новая ассоциация
                 }
-
-                // if (associationsAll.includes(dataItem)) {
-                //     console.log('но она уже есть в списке ассоциаций');
-    
-                //     // ok
-                // } else if (!associationsAll.includes(dataItem)) {
-                //     console.log('дополнен список ассоциаций');
-                //     associationsAll.push(dataItem);
-                // }
-    
-                console.log(intersection);
             }
-            console.log('идём дальше');
-            console.log('\t------------------------');
         }
         //
-        console.log('!! association inside !!');
-        console.log(associationCurrent);
         return associationCurrent;
-
     }
 }
 
@@ -177,27 +107,14 @@ function checkOnCopyAndDelete( currentAssociationIndex,  associationsList) {
         let newItemsAndAssociation = [...new Set([...currentAssociation, ...associationsList[i]])];
 
         if ( associationsList[i].length == newItemsAndAssociation.length ) {
-            // элементы полностью есть в текущей ассоциации - это не новая ассоциация. Возвращаем false
-            // console.log('элементы ' + newItems + '    полностью есть в текущей ассоциации ' + associationsList[i]);
-            // console.log(false);
-            // return false;
-
+            // элементы полностью есть в текущей ассоциации - это не новая ассоциация.
             // delete current association from associationList
-            console.log('....текущая ассоциация:');
-            console.log(currentAssociation);
-            console.log('....перед удалением:');
-            console.log(associationsList);
             if (i != currentAssociationIndex) {
                 associationsList.splice(currentAssociationIndex, 1);
                 isSomethingWasDeleted = -1;
-                console.log('....после удаления:');
             } else {
-                console.log('....нельзя удалять самого себя:');
+                // не удалять текущий экземпляр
             }
-            console.log(associationsList);
-
-
-
         } else {
             //ok
         }
@@ -207,7 +124,7 @@ function checkOnCopyAndDelete( currentAssociationIndex,  associationsList) {
 
 function checkOnNewAssociation( newItems, associationsList) {
     // true - новая ассоциация
-    // false - нет новая ассоциация
+    // false - не новая ассоциация
 
     for (let i = 0; i < associationsList.length; i++) {
 
@@ -215,13 +132,10 @@ function checkOnNewAssociation( newItems, associationsList) {
 
         if ( associationsList[i].length == newItemsAndAssociation.length ) {
             // элементы полностью есть в текущей ассоциации - это не новая ассоциация. Возвращаем false
-            // console.log('элементы ' + newItems + '    полностью есть в текущей ассоциации ' + associationsList[i]);
-            console.log(false);
             return false;
 
         } else if (newItemsAndAssociation.length > associationsList[i].length) {
-            // newItemsAndAssociation не может быть меньше текущей ассоциации - только больше
-            // console.log('элементы полностью не входят в ассоциацию - значит идём к следующей ассоциации');
+            // newItemsAndAssociation не может быть меньше текущей ассоциации - только больше - значит идём к следующей ассоциации'
             //ok
         }
     }
@@ -229,7 +143,6 @@ function checkOnNewAssociation( newItems, associationsList) {
     return true;
 }
 
-// console.log(checkOnNewAssociation(['a', 'b'], [ ['c', 'k'], ['a', 'c', 'd'], ['a', 'c', 'd', 'b']]));
 
 function findMaxAssociation(associationsList) {
 
@@ -246,10 +159,8 @@ function findMaxAssociation(associationsList) {
                 if (associationsList[associationNumber][0] < maxAssociation[0]) {
                     maxAssociation = associationsList[associationNumber];
                 }
-
             }
         }
         return maxAssociation;
     }
-
 }
